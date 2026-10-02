@@ -3,5 +3,5 @@
 </p>
 
 ---
-## Conquistas
- <img src="./assets/conquistas.png" width="700"/>
+Conquistas
+ <img src="./assets/badges.png" width="700"/>
