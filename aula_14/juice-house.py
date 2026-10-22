@@ -1,26 +1,51 @@
 from flask import Flask, jsonify, request
+from flasgger import Swagger
 import requests
 
 app = Flask(__name__)
+swagger = Swagger(app)
+
 sucos = []
+
 
 @app.route("/frutas/<nome>", methods=["GET"])
 def get_fruta(nome):
-    url = f"https://fruityvice.com/api/fruit/{nome}"
+    """
+    Consulta os dados nutricionais de uma fruta.
+    ---
+    tags:
+      - Frutas
+    parameters:
+      - name: nome
+        in: path
+        type: string
+        required: true
+        description: Nome da fruta em inglês.
+    responses:
+      200:
+        description: Dados nutricionais da fruta.
+      404:
+        description: Fruta não encontrada.
+      502:
+        description: Erro na consulta externa.
+    """
+    url = f"https://www.fruityvice.com/api/fruit/{nome}"
     resposta = requests.get(url, timeout=10)
+
     if resposta.status_code == 404:
         return jsonify({"erro": f"{nome} não foi encontrado"}), 404
     elif resposta.status_code != 200:
-        return jsonify({"erro": "Não foi possivel efetuar a consulta"}), 502
-    
+        return jsonify({"erro": "Não foi possível efetuar a consulta"}), 502
+
     dados = resposta.json()
     nutrientes = dados["nutritions"]
 
     return jsonify({
         "nome": dados["name"],
-       "calorias": nutrientes["calories"],
-       "acucar": nutrientes["sugar"],
+        "calorias": nutrientes["calories"],
+        "acucar": nutrientes["sugar"],
     })
+
 
 @app.route("/sucos", methods=["POST"])
 def cadastrar_suco():
